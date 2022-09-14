@@ -59,10 +59,38 @@ async function delete_transaction(req, res) {
     })
 }
 
+// get:http://localhost:8080/api/labels
+
+async function get_labels(req, res) {
+    model.Transaction.aggregate([
+        {
+            $lookup: {
+                from: "catagories",
+                localField: "type",
+                foreignField: "type",
+                as: "catagories_info"
+            }
+        },
+        {
+            $unwind: "$catagories_info"
+        }
+    ]).then(result => {
+        let data = result.map(v => Object.assign({ _id: v._id, name: v.name, type: v.type, amount: v.amount, date: v.date, color: v.catagories_info.color }))
+
+        res.json(data)
+    })
+        .catch(err => {
+            res.status(400).json({
+                message: `Lookup collection erroe  : ${err}`
+            })
+        })
+}
+
 module.exports = {
     create_catagories,
     get_catagories,
     get_transactions,
     create_transactions,
-    delete_transaction
+    delete_transaction,
+    get_labels
 }

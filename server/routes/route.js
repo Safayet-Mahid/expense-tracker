@@ -10,4 +10,7 @@ routes.route("/api/transactions")
     .post(controller.create_transactions)
     .delete(controller.delete_transaction)
 
+routes.route("/api/labels")
+    .get(controller.get_labels)
+
 module.exports = routes
